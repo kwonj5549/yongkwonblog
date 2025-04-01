@@ -1,26 +1,106 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;500;600;700&display=swap')
+layer(base);
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import 'tailwindcss';
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@config '../../tailwind.config.ts';
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility container-custom {
+  @apply container max-w-4xl mx-auto px-8 sm:px-10 lg:px-12;
+}
+
+@utility classic-card {
+  @apply bg-white border border-gray-100 shadow-xs hover:shadow-md transition-shadow rounded-sm;
+}
+
+@utility classic-divider {
+  @apply border-t border-gray-200 my-8;
+}
+
+@utility classic-link {
+  @apply text-primary hover:text-primary/80 transition-colors no-underline hover:underline;
+}
+
+@layer base {
+  :root {
+    --background: 39 38% 97%;
+    --foreground: 20 14% 22%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 22%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 22%;
+
+    --primary: 20 69% 16%;
+    --primary-foreground: 39 38% 95%;
+
+    --secondary: 39 38% 95%;
+    --secondary-foreground: 20 69% 16%;
+
+    --muted: 39 20% 92%;
+    --muted-foreground: 20 10% 40%;
+
+    --accent: 20 30% 88%;
+    --accent-foreground: 20 69% 16%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 39 38% 95%;
+
+    --border: 20 10% 86%;
+    --input: 20 10% 86%;
+    --ring: 20 69% 16%;
+
+    --radius: 0.25rem;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-bold leading-tight;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl lg:text-3xl;
+  }
+
+  p {
+    @apply leading-relaxed text-gray-700 font-sans;
+  }
+
+  .blog-content {
+    @apply prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold
+    prose-p:text-gray-700 prose-a:text-primary prose-a:no-underline prose-a:hover:underline
+    prose-img:rounded-sm prose-blockquote:border-primary prose-blockquote:text-gray-700
+    prose-blockquote:italic prose-strong:text-gray-800;
+  }
 }
