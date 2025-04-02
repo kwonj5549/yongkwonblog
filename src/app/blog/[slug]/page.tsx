@@ -11,15 +11,11 @@ export async function generateStaticParams() {
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-export default async function BlogPage({
-                                           params,
-                                       }: {
-    params: { slug: string };
-}) {
-    // Destructure slug directly from params
-    const { slug } = params;
+export default async function BlogPage({ params }: { params: { slug: string } }) {
+    // Wrap params in a resolved promise so TypeScript sees a Promise-like value.
+    const resolvedParams = await Promise.resolve(params);
+    const { slug } = resolvedParams;
 
-    // Fetch the post by slug
     const post = await getPostBySlug(slug);
     if (!post) {
         notFound();
