@@ -10,7 +10,7 @@ export interface BlogPost {
   title: { rendered: string };
   excerpt: { rendered: string };
   date: string;
-  jetpack_featured_media_url: string; // Use this property for the featured image URL.
+  jetpack_featured_media_url: string;
   _embedded?: {
     "wp:term"?: Array<
         Array<{
@@ -33,12 +33,17 @@ interface BlogCardProps {
 }
 
 const BlogCard = ({ post, children }: BlogCardProps) => {
-  // Get the first category name from the embedded wp:term array, or default to "Category".
-  const categoryName =
-      post._embedded?.["wp:term"]?.[0]?.[0]?.name || "Category";
+  // Extract all category terms from embedded data
+  const categories =
+      post._embedded?.["wp:term"]?.flat().filter((term) => term.taxonomy === "category") || [];
 
   // Use the jetpack_featured_media_url for the image.
   const imageUrl = post.jetpack_featured_media_url;
+  const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
   return (
       <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow">
@@ -56,10 +61,17 @@ const BlogCard = ({ post, children }: BlogCardProps) => {
         <div className="w-full">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <Badge variant="secondary" className="mb-2">
-                {he.decode(categoryName)}
-              </Badge>
-              <span className="text-sm text-gray-500">{post.date}</span>
+              {/* Render all categories if any exist */}
+              {categories.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {categories.map((term) => (
+                        <Badge key={term.id} variant="secondary">
+                          {he.decode(term.name)}
+                        </Badge>
+                    ))}
+                  </div>
+              )}
+              <span className="text-sm text-gray-500">{formattedDate}</span>
             </div>
             <Link href={`/blog/${post.slug}`}>
               <h3 className="text-xl font-bold hover:text-blue-600 transition-colors line-clamp-2">
