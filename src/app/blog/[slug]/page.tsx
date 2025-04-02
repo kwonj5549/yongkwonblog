@@ -12,11 +12,12 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPage({ params }: { params: { slug: string } }) {
-    // Wrap params in a resolved promise so TypeScript sees a Promise-like value.
-    const resolvedParams = await Promise.resolve(params);
-    const { slug } = resolvedParams;
+    // ✅ No more forced Promise wrapping
+    const { slug } = params;
 
+    // Now everything works as expected
     const post = await getPostBySlug(slug);
+
     if (!post) {
         notFound();
     }
