@@ -1,24 +1,23 @@
+// src/app/blog/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 
-// Optional: Generate static paths for pre-rendering
 export async function generateStaticParams() {
     const posts = await getAllPosts();
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-interface BlogPageProps {
-    params: Promise<{ slug: string }> | { slug: string };
-}
+// The page component signature must accept an object with `params`
+export default async function BlogPage({
+                                           params,
+                                       }: {
+    params: { slug: string };
+}) {
+    const { slug } = params;
 
-export default async function BlogPage({ params }: BlogPageProps) {
-    // Await params if they are a promise
-    const resolvedParams = await params;
-    const { slug } = resolvedParams;
     const post = await getPostBySlug(slug);
-
     if (!post) {
         notFound();
     }
