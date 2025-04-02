@@ -6,27 +6,31 @@ import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 
 // Generate static params for SSG (optional)
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
     const posts = await getAllPosts();
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-export default async function BlogPage({ params }: { params: { slug: string } }) {
-    // Wrap params in a resolved promise so TypeScript sees a Promise-like value.
-    const resolvedParams = await Promise.resolve(params);
-    const { slug } = resolvedParams;
+// ✨ Notice the type: { params: Promise<{ slug: string }> }
+export default async function BlogPage({
+                                           params,
+                                       }: {
+    params: Promise<{ slug: string }>;
+}) {
+    // We must "await" params because it's typed as a Promise
+    const { slug } = await params;
 
     const post = await getPostBySlug(slug);
     if (!post) {
         notFound();
     }
 
-    // Extract the category from the embedded data for the main post
+    // Extract the category from embedded data
     const categoryName =
         post._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
         "Category";
 
-    // Fetch all posts and filter related posts by matching the extracted category
+    // Fetch all posts & find related
     const allPosts = await getAllPosts();
     const relatedPosts = allPosts
         .filter((p: WPPost) => {
@@ -46,20 +50,19 @@ export default async function BlogPage({ params }: { params: { slug: string } })
                     alt={post.title.rendered}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+                <div className="absolute inset-0 bg-black bg-opacity-30" />
             </div>
 
             <div className="container-custom py-12">
                 <BackButton />
+
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-8">
                         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
               <span className="inline-flex items-center gap-1">
                 {new Date(post.date).toLocaleDateString()}
               </span>
-                            <span className="inline-flex items-center gap-1">
-                Yong Kwon
-              </span>
+                            <span className="inline-flex items-center gap-1">Yong Kwon</span>
                         </div>
 
                         <h1
@@ -109,9 +112,9 @@ export default async function BlogPage({ params }: { params: { slug: string } })
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             {relatedPosts.map((relatedPost: WPPost) => {
                                 const relatedCategory =
-                                    relatedPost._embedded?.["wp:term"]?.find(
-                                        (group) => group[0]?.taxonomy === "category"
-                                    )?.[0]?.name || "Category";
+                                    relatedPost._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]
+                                        ?.name || "Category";
+
                                 return (
                                     <div
                                         key={relatedPost.id}
