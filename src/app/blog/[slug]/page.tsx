@@ -6,16 +6,14 @@ import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 
 // Generate static params for SSG (optional)
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
     const posts = await getAllPosts();
+    // Make sure WPPost.slug is indeed a string in your WPPost interface
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-export default async function BlogPage({ params }: { params: { slug: string } }) {
-    // ✅ No more forced Promise wrapping
+export default async function BlogPage({ params }: BlogPageProps) {
     const { slug } = params;
-
-    // Now everything works as expected
     const post = await getPostBySlug(slug);
 
     if (!post) {
