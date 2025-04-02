@@ -20,7 +20,7 @@ export interface WPPost {
 }
 
 export async function getAllPosts(): Promise<WPPost[]> {
-    const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+    const apiUrl = process.env.WORDPRESS_API_URL;
     const res = await fetch(`${apiUrl}/posts?_embed`, { next: { revalidate: 60 } });
     if (!res.ok) {
         throw new Error("Failed to fetch posts");
@@ -29,7 +29,7 @@ export async function getAllPosts(): Promise<WPPost[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<WPPost | null> {
-    const apiUrl = process.env.NEXT_PUBLIC_WORDPRESS_API_URL;
+    const apiUrl = process.env.WORDPRESS_API_URL;
     const res = await fetch(`${apiUrl}/posts?slug=${slug}&_embed`, { next: { revalidate: 60 } });
     const posts: WPPost[] = await res.json();
     console.log(posts);
