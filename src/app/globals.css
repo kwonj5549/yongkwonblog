@@ -103,4 +103,11 @@ layer(base);
     prose-img:rounded-sm prose-blockquote:border-primary prose-blockquote:text-gray-700
     prose-blockquote:italic prose-strong:text-gray-800;
   }
+  .blog-excerpt {
+    @apply prose prose-base max-w-none
+    prose-headings:font-serif prose-headings:font-bold
+    prose-p:text-gray-700
+    prose-a:text-primary prose-a:no-underline prose-a:hover:underline
+    prose-img:rounded-sm;
+  }
 }

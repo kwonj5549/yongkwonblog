@@ -6,19 +6,17 @@ import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 import Image from "next/image";
 
-// Generate static params for SSG (optional)
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
     const posts = await getAllPosts();
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-// ✨ Notice the type: { params: Promise<{ slug: string }> }
 export default async function BlogPage({
                                            params,
                                        }: {
     params: Promise<{ slug: string }>;
 }) {
-    // We must "await" params because it's typed as a Promise
+    // 1. Await the params
     const { slug } = await params;
 
     const post = await getPostBySlug(slug);
@@ -26,12 +24,26 @@ export default async function BlogPage({
         notFound();
     }
 
-    // Extract the category from embedded data
+    // 2. Format date as "Sep 23, 2023"
+    const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+
+    // 3. Compute reading time
+    //    Strip HTML tags, split by whitespace, and calculate minutes
+    const contentText = post.content.rendered.replace(/<[^>]+>/g, "");
+    const wordCount = contentText.trim().split(/\s+/).length;
+    const wordsPerMinute = 200;
+    const readingTime = Math.ceil(wordCount / wordsPerMinute);
+
+    // 4. Extract category name if needed
     const categoryName =
         post._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
         "Category";
 
-    // Fetch all posts & find related
+    // 5. Find related posts
     const allPosts = await getAllPosts();
     const relatedPosts = allPosts
         .filter((p: WPPost) => {
@@ -44,30 +56,35 @@ export default async function BlogPage({
 
     return (
         <div>
-            {/* Featured image at the top */}
-
-
             <div className="container-custom py-12">
                 <BackButton />
 
                 <div className="max-w-3xl mx-auto">
                     <div className="mb-8">
-                        <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-              <span className="inline-flex items-center gap-1">
-                {new Date(post.date).toLocaleDateString()}
-              </span>
-                            <span className="inline-flex items-center gap-1">Yong Kwon</span>
+                        {/* Top row with reading time & date */}
+                        <div className="flex pl-1.5 items-center gap-2 text-sm text-gray-500 mb-4">
+                            <span>{readingTime} min read</span>
+                            <span>•</span>
+                            <span>{formattedDate}</span>
                         </div>
 
+                        {/* Title */}
                         <h1
-                            className="text-4xl font-bold mb-4"
+                            className="text-4xl font-bold mb-2"
                             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
                         />
-
+                        {/* Blog excerpt */}
+                        <h2
+                            className="text-lg pl-1 font-bold mb-8"
+                            dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
+                        />
+                        {/* Author row */}
                         <div className="flex items-center mb-6">
-                            <img
+                            <Image
                                 src="/YongKwonProfile.png"
                                 alt="Yong Kwon"
+                                width={40}
+                                height={40}
                                 className="w-10 h-10 rounded-full mr-3"
                             />
                             <div>
@@ -76,7 +93,9 @@ export default async function BlogPage({
                             </div>
                         </div>
                     </div>
-                    <div className="container-custom max-w-3xl mx-0 px-0 mb-0">
+
+                    {/* Featured Image */}
+                    <div className="container-custom max-w-3xl mx-0 px-0 mb-4">
                         <img
                             src={post.jetpack_featured_media_url || "/fallback.jpg"}
                             alt={post.title.rendered}
@@ -84,14 +103,13 @@ export default async function BlogPage({
                         />
                     </div>
 
-
                     {/* Blog content */}
                     <div
                         className="blog-content"
                         dangerouslySetInnerHTML={{ __html: post.content.rendered }}
                     />
 
-                    {/* Tags / Categories */}
+                    {/* Categories (optional) */}
                     <div className="my-10 pt-10 border-t">
                         <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
