@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
+import Image from "next/image";
 
 // Generate static params for SSG (optional)
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
@@ -44,14 +45,7 @@ export default async function BlogPage({
     return (
         <div>
             {/* Featured image at the top */}
-            <div className="w-full h-96 relative">
-                <img
-                    src={post.jetpack_featured_media_url || ""}
-                    alt={post.title.rendered}
-                    className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-30" />
-            </div>
+
 
             <div className="container-custom py-12">
                 <BackButton />
@@ -82,6 +76,14 @@ export default async function BlogPage({
                             </div>
                         </div>
                     </div>
+                    <div className="container-custom max-w-3xl mx-0 px-0 mb-0">
+                        <img
+                            src={post.jetpack_featured_media_url || "/fallback.jpg"}
+                            alt={post.title.rendered}
+                            className="w-full h-auto object-contain"
+                        />
+                    </div>
+
 
                     {/* Blog content */}
                     <div
