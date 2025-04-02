@@ -1,4 +1,5 @@
 // src/app/blog/[slug]/page.tsx
+
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
@@ -10,14 +11,15 @@ export async function generateStaticParams() {
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-// Correct function signature: remove custom interfaces or promises
 export default async function BlogPage({
                                            params,
                                        }: {
     params: { slug: string };
 }) {
+    // Destructure slug directly from params
     const { slug } = params;
 
+    // Fetch the post by slug
     const post = await getPostBySlug(slug);
     if (!post) {
         notFound();
