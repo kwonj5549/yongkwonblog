@@ -4,12 +4,13 @@ import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 
+// Generate static params for SSG (optional)
 export async function generateStaticParams() {
     const posts = await getAllPosts();
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-// The page component signature must accept an object with `params`
+// Correct function signature: remove custom interfaces or promises
 export default async function BlogPage({
                                            params,
                                        }: {
