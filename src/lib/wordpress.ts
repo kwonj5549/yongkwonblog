@@ -21,12 +21,27 @@ export interface WPPost {
 //test
 export async function getAllPosts(): Promise<WPPost[]> {
     const apiUrl = process.env.WORDPRESS_API_URL;
-    const res = await fetch(`${apiUrl}/posts?_embed`, { next: { revalidate: 60 } });
-    if (!res.ok) {
-        throw new Error("Failed to fetch posts");
-    }
-    return res.json();
+    let page = 1;
+    const perPage = 100; // Maximum allowed per request by WordPress
+    let allPosts: WPPost[] = [];
+    let fetchedPosts: WPPost[] = [];
+
+    do {
+        const res = await fetch(
+            `${apiUrl}/posts?_embed&per_page=${perPage}&page=${page}`,
+            { next: { revalidate: 60 } }
+        );
+        if (!res.ok) {
+            throw new Error("Failed to fetch posts");
+        }
+        fetchedPosts = await res.json();
+        allPosts = allPosts.concat(fetchedPosts);
+        page++;
+    } while (fetchedPosts.length === perPage); // Continue if the current page is full
+
+    return allPosts;
 }
+
 
 export async function getPostBySlug(slug: string): Promise<WPPost | null> {
     const apiUrl = process.env.WORDPRESS_API_URL;
