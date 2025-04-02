@@ -18,7 +18,7 @@ export interface WPPost {
         >;
     };
 }
-
+//test
 export async function getAllPosts(): Promise<WPPost[]> {
     const apiUrl = process.env.WORDPRESS_API_URL;
     const res = await fetch(`${apiUrl}/posts?_embed`, { next: { revalidate: 60 } });
