@@ -1,5 +1,3 @@
-// src/app/blog/[slug]/page.tsx
-
 import { notFound } from "next/navigation";
 import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
@@ -25,15 +23,25 @@ export default async function BlogPage({ params }: BlogPageProps) {
         notFound();
     }
 
-    // For a simple related posts example, we fetch all posts and filter by matching category.
+    // Extract the category from the embedded data for the main post
+    const categoryName =
+        post._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
+        "Category";
+
+    // Fetch all posts and filter related posts by matching the extracted category
     const allPosts = await getAllPosts();
     const relatedPosts = allPosts
-        .filter((p: WPPost) => p.categories && p.categories[0] === post.categories?.[0] && p.id !== post.id)
+        .filter((p: WPPost) => {
+            const pCategory =
+                p._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
+                "Category";
+            return pCategory === categoryName && p.id !== post.id;
+        })
         .slice(0, 3);
 
     return (
         <div>
-            {/* Featured image */}
+            {/* Featured image at the top */}
             <div className="w-full h-96 relative">
                 <img
                     src={post.jetpack_featured_media_url || ""}
@@ -49,38 +57,42 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     <div className="mb-8">
                         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
               <span className="inline-flex items-center gap-1">
-                {/* You can add a Calendar icon here if desired */}
-                  {new Date(post.date).toLocaleDateString()}
+                {new Date(post.date).toLocaleDateString()}
               </span>
                             <span className="inline-flex items-center gap-1">
-                {/* You can add a User icon here if desired */}
-                                {post.author_name || "Author"}
+                Yong Kwon
               </span>
                         </div>
 
-                        <h1 className="text-4xl font-bold mb-4" dangerouslySetInnerHTML={{ __html: post.title.rendered }} />
+                        <h1
+                            className="text-4xl font-bold mb-4"
+                            dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                        />
 
                         <div className="flex items-center mb-6">
                             <img
-                                src={post.author_avatar_urls ? post.author_avatar_urls["48"] : ""}
-                                alt={post.author_name || "Author"}
+                                src="/YongKwonProfile.png"
+                                alt="Yong Kwon"
                                 className="w-10 h-10 rounded-full mr-3"
                             />
                             <div>
-                                <div className="font-medium">{post.author_name || "Author"}</div>
+                                <div className="font-medium">Yong Kwon</div>
                                 <div className="text-sm text-gray-500">Author</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Blog content */}
-                    <div className="blog-content" dangerouslySetInnerHTML={{ __html: post.content.rendered }} />
+                    <div
+                        className="blog-content"
+                        dangerouslySetInnerHTML={{ __html: post.content.rendered }}
+                    />
 
                     {/* Tags / Categories */}
                     <div className="my-10 pt-10 border-t">
                         <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                {post.categories && post.categories[0] ? `Category ${post.categories[0]}` : "Category"}
+                {categoryName}
               </span>
                             <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
                 M&A
@@ -97,29 +109,40 @@ export default async function BlogPage({ params }: BlogPageProps) {
                     <div className="mt-16">
                         <h2 className="text-2xl font-bold mb-8 text-center">Related Posts</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            {relatedPosts.map((relatedPost: WPPost) => (
-                                <div
-                                    key={relatedPost.id}
-                                    className="border rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-shadow"
-                                >
-                                    <img
-                                        src={relatedPost.jetpack_featured_media_url || ""}
-                                        alt={relatedPost.title.rendered}
-                                        className="w-full h-48 object-cover"
-                                    />
-                                    <div className="p-4">
-                    <span className="text-sm text-gray-500 mb-2 block">
-                      {new Date(relatedPost.date).toLocaleDateString()}
-                    </span>
-                                        <h3 className="font-bold text-lg mb-2 hover:text-blue-600 transition-colors">
-                                            <a href={`/blog/${relatedPost.slug}`}>
-                                                {relatedPost.title.rendered}
-                                            </a>
-                                        </h3>
-                                        <p className="text-gray-600 text-sm line-clamp-2" dangerouslySetInnerHTML={{ __html: relatedPost.excerpt.rendered }} />
+                            {relatedPosts.map((relatedPost: WPPost) => {
+                                const relatedCategory =
+                                    relatedPost._embedded?.["wp:term"]?.find(
+                                        (group) => group[0]?.taxonomy === "category"
+                                    )?.[0]?.name || "Category";
+                                return (
+                                    <div
+                                        key={relatedPost.id}
+                                        className="border rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-shadow"
+                                    >
+                                        <img
+                                            src={relatedPost.jetpack_featured_media_url || ""}
+                                            alt={relatedPost.title.rendered}
+                                            className="w-full h-48 object-cover"
+                                        />
+                                        <div className="p-4">
+                      <span className="text-sm text-gray-500 mb-2 block">
+                        {new Date(relatedPost.date).toLocaleDateString()}
+                      </span>
+                                            <h3 className="font-bold text-lg mb-2 hover:text-blue-600 transition-colors">
+                                                <a href={`/blog/${relatedPost.slug}`}>
+                                                    {relatedPost.title.rendered}
+                                                </a>
+                                            </h3>
+                                            <p
+                                                className="text-gray-600 text-sm line-clamp-2"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: relatedPost.excerpt.rendered,
+                                                }}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

@@ -4,7 +4,7 @@ import Image from "next/image";
 import BlogCard from "@/components/BlogCard";
 import FeaturedBlogCard from "@/components/FeaturedBlogCard";
 import Newsletter from "@/components/Newsletter";
-import { blogPosts } from "@/data/blogPosts";
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
