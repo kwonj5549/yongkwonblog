@@ -5,21 +5,18 @@ import { getPostBySlug, getAllPosts, WPPost } from "@/lib/wordpress";
 import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 
-// Generate static params for SSG
-export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
+// Generate static params for SSG (optional)
+export async function generateStaticParams() {
     const posts = await getAllPosts();
-    // Return array of objects with { slug }
     return posts.map((post: WPPost) => ({ slug: post.slug }));
 }
 
-export default async function BlogPage({
-                                           params,
-                                       }: {
-    params: { slug: string };
-}) {
-    const { slug } = params;
-    const post = await getPostBySlug(slug);
+export default async function BlogPage({ params }: { params: { slug: string } }) {
+    // Wrap params in a resolved promise so TypeScript sees a Promise-like value.
+    const resolvedParams = await Promise.resolve(params);
+    const { slug } = resolvedParams;
 
+    const post = await getPostBySlug(slug);
     if (!post) {
         notFound();
     }
@@ -60,7 +57,9 @@ export default async function BlogPage({
               <span className="inline-flex items-center gap-1">
                 {new Date(post.date).toLocaleDateString()}
               </span>
-                            <span className="inline-flex items-center gap-1">Yong Kwon</span>
+                            <span className="inline-flex items-center gap-1">
+                Yong Kwon
+              </span>
                         </div>
 
                         <h1
@@ -113,7 +112,6 @@ export default async function BlogPage({
                                     relatedPost._embedded?.["wp:term"]?.find(
                                         (group) => group[0]?.taxonomy === "category"
                                     )?.[0]?.name || "Category";
-
                                 return (
                                     <div
                                         key={relatedPost.id}
