@@ -19,7 +19,7 @@ const Page = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="md:col-span-1">
             <img 
-              src="https://randomuser.me/api/portraits/men/32.jpg" 
+              src="/YongKwonProfile.png"
               alt="Profile"
               className="rounded-xl w-full max-w-xs mx-auto"
             />
@@ -49,7 +49,7 @@ const Page = () => {
           </div>
           
           <div className="md:col-span-2 space-y-6">
-            <h2 className="text-2xl font-bold">Hello, I'm Alex Johnson</h2>
+            <h2 className="text-2xl font-bold">Hello, I'm Yong Kwon</h2>
             
             <p>
               I'm a full-stack developer with over 10 years of experience in the tech industry. I've worked with startups and large corporations, helping them build innovative web applications and improve their development processes.
