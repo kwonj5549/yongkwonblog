@@ -67,7 +67,6 @@ export async function getPostBySlug(slug: string): Promise<WPPost | null> {
     const apiUrl = process.env.WORDPRESS_API_URL;
     const res = await fetch(`${apiUrl}/posts?slug=${slug}&_embed`, { next: { revalidate: 60 } });
     const posts: WPPost[] = await res.json();
-    console.log(posts);
     if (!posts || posts.length === 0) {
         return null;
     }
