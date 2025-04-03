@@ -4,10 +4,10 @@ import ClientBlogsPage from "../../ClientBlogsPage";
 import { getPostsByPage, getTotalPages, WPPost } from "@/lib/wordpress";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         page: string;
-    };
-    searchParams: { q?: string };
+    }>;
+    searchParams: Promise<{ q?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -18,14 +18,15 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPage({ params, searchParams }: PageProps) {
-    const currentPage = parseInt(params.page, 10);
+    // Await the params and searchParams before using them.
+    const { page } = await params;
+    const currentPage = parseInt(page, 10);
+    const { q: searchQuery = "" } = await searchParams;
     const perPage = 9;
-    const searchQuery = searchParams.q ?? "";
     let posts: WPPost[];
     let totalPages: number;
 
-    // When there's no search query, fetch server-side paginated posts.
-    // If there is a search query, leave posts empty – the client component will fetch them.
+    // If there is a search query, leave posts empty so that the client component fetches them.
     if (searchQuery) {
         posts = [];
         totalPages = 1;
