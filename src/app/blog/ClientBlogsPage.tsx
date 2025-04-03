@@ -32,26 +32,34 @@ export default function ClientBlogsPage({
                                             totalPages,
                                         }: ClientBlogsPageProps) {
     const [searchTerm, setSearchTerm] = useState("");
+    // Use separate state for pagination when in search mode.
     const [page, setPage] = useState(currentPage);
 
-    // Reset page to 1 whenever search term changes.
+    // When search term changes, reset page to 1.
     useEffect(() => {
         setPage(1);
     }, [searchTerm]);
 
-    // Debounce the search term.
+    // Debounce the search term so we don't trigger a request on every keystroke.
     const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-    // If a search term exists, build the API URL. Otherwise, use fallback data.
+    // Build the search URL only if there's an active search term.
     const searchUrl = debouncedSearchTerm
         ? `/api/searchPosts?q=${encodeURIComponent(debouncedSearchTerm)}&page=${page}&per_page=9`
         : null;
 
-    // Use SWR to fetch search results; provide fallbackData only when no search term is active.
+    // Use SWR to fetch search results; only provide fallbackData if there’s no active search.
     const { data } = useSWR(searchUrl, fetcher, {
         fallbackData: !searchUrl ? { posts, totalPages } : undefined,
         revalidateOnFocus: false,
     });
+
+    // Use API results when search is active; otherwise fallback to passed props.
+    const displayedPosts = data?.posts ?? posts;
+    // For total pages, if search is active, use the fetched totalPages; otherwise, use fallback.
+    const fetchedTotalPages = searchUrl
+        ? Number(data?.totalPages) || 0
+        : Number(data?.totalPages || totalPages);
 
     // While in search mode, show a loading indicator if data hasn't loaded yet.
     if (searchUrl && !data) {
@@ -61,9 +69,6 @@ export default function ClientBlogsPage({
             </div>
         );
     }
-
-    const displayedPosts = data?.posts || [];
-    const fetchedTotalPages = Number(data?.totalPages || totalPages);
 
     return (
         <div>
@@ -107,32 +112,64 @@ export default function ClientBlogsPage({
                 {/* Pagination Controls */}
                 {fetchedTotalPages > 1 && (
                     <div className="flex justify-center mt-8 space-x-4">
-                        {page > 1 && (
-                            <button
-                                onClick={() => setPage(page - 1)}
-                                className="px-4 py-2 bg-gray-200 rounded"
-                            >
-                                Previous
-                            </button>
-                        )}
-                        {Array.from({ length: fetchedTotalPages }, (_, index) => (
-                            <button
-                                key={index + 1}
-                                onClick={() => setPage(index + 1)}
-                                className={`px-4 py-2 rounded ${
-                                    page === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
-                                }`}
-                            >
-                                {index + 1}
-                            </button>
-                        ))}
-                        {page < fetchedTotalPages && (
-                            <button
-                                onClick={() => setPage(page + 1)}
-                                className="px-4 py-2 bg-gray-200 rounded"
-                            >
-                                Next
-                            </button>
+                        {/*
+              If no search term is active, render pagination as Next.js Links
+              to change routes; if search term is active, use buttons to update state.
+            */}
+                        {!searchTerm ? (
+                            <>
+                                {currentPage > 1 && (
+                                    <Link href={`/blog/page/${currentPage - 1}`}>
+                                        <div className="px-4 py-2 bg-gray-200 rounded">Previous</div>
+                                    </Link>
+                                )}
+                                {Array.from({ length: fetchedTotalPages }, (_, index) => (
+                                    <Link key={index + 1} href={`/blog/page/${index + 1}`}>
+                                        <div
+                                            className={`px-4 py-2 rounded ${
+                                                currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                                            }`}
+                                        >
+                                            {index + 1}
+                                        </div>
+                                    </Link>
+                                ))}
+                                {currentPage < fetchedTotalPages && (
+                                    <Link href={`/blog/page/${currentPage + 1}`}>
+                                        <div className="px-4 py-2 bg-gray-200 rounded">Next</div>
+                                    </Link>
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                {page > 1 && (
+                                    <button
+                                        onClick={() => setPage(page - 1)}
+                                        className="px-4 py-2 bg-gray-200 rounded"
+                                    >
+                                        Previous
+                                    </button>
+                                )}
+                                {Array.from({ length: fetchedTotalPages }, (_, index) => (
+                                    <button
+                                        key={index + 1}
+                                        onClick={() => setPage(index + 1)}
+                                        className={`px-4 py-2 rounded ${
+                                            page === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                                        }`}
+                                    >
+                                        {index + 1}
+                                    </button>
+                                ))}
+                                {page < fetchedTotalPages && (
+                                    <button
+                                        onClick={() => setPage(page + 1)}
+                                        className="px-4 py-2 bg-gray-200 rounded"
+                                    >
+                                        Next
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 )}

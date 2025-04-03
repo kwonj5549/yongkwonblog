@@ -4,8 +4,10 @@ import ClientBlogsPage from "../../ClientBlogsPage";
 import { getPostsByPage, getTotalPages, WPPost } from "@/lib/wordpress";
 
 interface PageProps {
-    params: Promise<{ page: string }>;
-    searchParams: Promise<{ q?: string }>;
+    params: {
+        page: string;
+    };
+    searchParams: { q?: string };
 }
 
 export async function generateStaticParams() {
@@ -16,12 +18,9 @@ export async function generateStaticParams() {
 }
 
 export default async function BlogPage({ params, searchParams }: PageProps) {
-    // Await params and searchParams before destructuring
-    const resolvedParams = await params;
-    const resolvedSearchParams = await searchParams;
-    const currentPage = parseInt(resolvedParams.page, 10);
+    const currentPage = parseInt(params.page, 10);
     const perPage = 9;
-    const searchQuery = resolvedSearchParams.q ?? "";
+    const searchQuery = searchParams.q ?? "";
     let posts: WPPost[];
     let totalPages: number;
 
