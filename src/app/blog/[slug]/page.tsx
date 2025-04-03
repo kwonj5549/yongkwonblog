@@ -71,11 +71,13 @@ export default async function BlogPage({
                         {/* Title */}
                         <h1
                             className="text-4xl font-bold mb-2"
+                            suppressHydrationWarning
                             dangerouslySetInnerHTML={{ __html: post.title.rendered }}
                         />
                         {/* Blog excerpt */}
                         <h2
                             className="text-lg pl-1 font-bold mb-8"
+                            suppressHydrationWarning
                             dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
                         />
                         {/* Author row */}
@@ -97,7 +99,7 @@ export default async function BlogPage({
                     {/* Featured Image */}
                     <div className="container-custom max-w-3xl mx-0 px-0 mb-4">
                         <img
-                            src={post.jetpack_featured_media_url || "/fallback.jpg"}
+                            src={post.jetpack_featured_media_url || undefined}
                             alt={post.title.rendered}
                             className="w-full h-auto object-contain"
                         />
@@ -106,6 +108,7 @@ export default async function BlogPage({
                     {/* Blog content */}
                     <div
                         className="blog-content"
+                        suppressHydrationWarning
                         dangerouslySetInnerHTML={{ __html: post.content.rendered }}
                     />
 
@@ -141,7 +144,7 @@ export default async function BlogPage({
                                         className="border rounded-lg overflow-hidden shadow-xs hover:shadow-md transition-shadow"
                                     >
                                         <img
-                                            src={relatedPost.jetpack_featured_media_url || ""}
+                                            src={relatedPost.jetpack_featured_media_url || undefined}
                                             alt={relatedPost.title.rendered}
                                             className="w-full h-48 object-cover"
                                         />
@@ -156,6 +159,7 @@ export default async function BlogPage({
                                             </h3>
                                             <p
                                                 className="text-gray-600 text-sm line-clamp-2"
+                                                suppressHydrationWarning
                                                 dangerouslySetInnerHTML={{
                                                     __html: relatedPost.excerpt.rendered,
                                                 }}

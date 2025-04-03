@@ -120,14 +120,18 @@ export default function ClientBlogsPage({
                             <>
                                 {currentPage > 1 && (
                                     <Link href={`/blog/page/${currentPage - 1}`}>
-                                        <div className="px-4 py-2 bg-gray-200 rounded">Previous</div>
+                                        <div className="px-4 py-2 bg-gray-200 rounded transition-colors duration-200 hover:bg-gray-300">
+                                            Previous
+                                        </div>
                                     </Link>
                                 )}
                                 {Array.from({ length: fetchedTotalPages }, (_, index) => (
                                     <Link key={index + 1} href={`/blog/page/${index + 1}`}>
                                         <div
-                                            className={`px-4 py-2 rounded ${
-                                                currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                                            className={`px-4 py-2 rounded transition-colors duration-200 ${
+                                                currentPage === index + 1
+                                                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                                                    : "bg-gray-200 hover:bg-gray-300"
                                             }`}
                                         >
                                             {index + 1}
@@ -136,7 +140,9 @@ export default function ClientBlogsPage({
                                 ))}
                                 {currentPage < fetchedTotalPages && (
                                     <Link href={`/blog/page/${currentPage + 1}`}>
-                                        <div className="px-4 py-2 bg-gray-200 rounded">Next</div>
+                                        <div className="px-4 py-2 bg-gray-200 rounded transition-colors duration-200 hover:bg-gray-300">
+                                            Next
+                                        </div>
                                     </Link>
                                 )}
                             </>
@@ -145,7 +151,7 @@ export default function ClientBlogsPage({
                                 {page > 1 && (
                                     <button
                                         onClick={() => setPage(page - 1)}
-                                        className="px-4 py-2 bg-gray-200 rounded"
+                                        className="px-4 py-2 bg-gray-200 rounded transition-colors duration-200 hover:bg-gray-300"
                                     >
                                         Previous
                                     </button>
@@ -154,8 +160,10 @@ export default function ClientBlogsPage({
                                     <button
                                         key={index + 1}
                                         onClick={() => setPage(index + 1)}
-                                        className={`px-4 py-2 rounded ${
-                                            page === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+                                        className={`px-4 py-2 rounded transition-colors duration-200 ${
+                                            page === index + 1
+                                                ? "bg-blue-500 text-white hover:bg-blue-600"
+                                                : "bg-gray-200 hover:bg-gray-300"
                                         }`}
                                     >
                                         {index + 1}
@@ -164,7 +172,7 @@ export default function ClientBlogsPage({
                                 {page < fetchedTotalPages && (
                                     <button
                                         onClick={() => setPage(page + 1)}
-                                        className="px-4 py-2 bg-gray-200 rounded"
+                                        className="px-4 py-2 bg-gray-200 rounded transition-colors duration-200 hover:bg-gray-300"
                                     >
                                         Next
                                     </button>

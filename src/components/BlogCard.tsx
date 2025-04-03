@@ -82,6 +82,7 @@ const BlogCard = ({ post, children }: BlogCardProps) => {
           <CardContent>
             <p
                 className="text-gray-600 line-clamp-3"
+                suppressHydrationWarning
                 dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
             />
           </CardContent>
