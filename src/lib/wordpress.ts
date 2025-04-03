@@ -18,6 +18,27 @@ export interface WPPost {
         >;
     };
 }
+
+export async function getPostsByPage(page: number, perPage: number): Promise<WPPost[]> {
+    const apiUrl = process.env.WORDPRESS_API_URL;
+    const res = await fetch(`${apiUrl}/posts?_embed&per_page=${perPage}&page=${page}`, {
+        next: { revalidate: 60 },
+    });
+    if (!res.ok) {
+        throw new Error(`Failed to fetch posts for page ${page}`);
+    }
+    return res.json();
+}
+
+export async function getTotalPages(perPage: number): Promise<number> {
+    const apiUrl = process.env.WORDPRESS_API_URL;
+    const res = await fetch(`${apiUrl}/posts?_embed&per_page=${perPage}&page=1`, {
+        next: { revalidate: 60 },
+    });
+    // WordPress returns the total number of pages in the X-WP-TotalPages header.
+    const totalPagesHeader = res.headers.get("X-WP-TotalPages");
+    return totalPagesHeader ? parseInt(totalPagesHeader, 10) : 1;
+}
 //test
 export async function getAllPosts(): Promise<WPPost[]> {
     const apiUrl = process.env.WORDPRESS_API_URL;
@@ -41,7 +62,6 @@ export async function getAllPosts(): Promise<WPPost[]> {
 
     return allPosts;
 }
-
 
 export async function getPostBySlug(slug: string): Promise<WPPost | null> {
     const apiUrl = process.env.WORDPRESS_API_URL;

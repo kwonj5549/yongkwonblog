@@ -31,7 +31,7 @@ const Header = () => {
           <Link href="/" className="text-gray-800 hover:text-blue-600 transition-colors font-medium">
             Home
           </Link>
-          <Link href="/blog" className="text-gray-800 hover:text-blue-600 transition-colors font-medium">
+          <Link href="/blog/page/1" className="text-gray-800 hover:text-blue-600 transition-colors font-medium">
             Blog
           </Link>
           <Link href="/about" className="text-gray-800 hover:text-blue-600 transition-colors font-medium">
@@ -53,7 +53,7 @@ const Header = () => {
             >
               Home
             </Link>
-            <Link href="/blog" 
+            <Link href="/blog/page/1" 
               className="text-gray-800 hover:text-blue-600 transition-colors font-medium py-2"
               onClick={() => setIsMenuOpen(false)}
             >

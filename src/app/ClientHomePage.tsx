@@ -47,7 +47,7 @@ export default function ClientBlogsPage({ posts }: { posts: any[] }) {
                             </p>
                             <div className="flex flex-wrap gap-4 mt-8">
                                 <Button asChild size="lg" className="rounded-sm shadow-md">
-                                    <Link href="/blog">Read My Blog</Link>
+                                    <Link href="/blog/page/1">Read My Blog</Link>
                                 </Button>
                                 <Button asChild variant="outline" size="lg" className="rounded-sm border-2">
                                     <Link href="/about">About Me</Link>
@@ -114,7 +114,7 @@ export default function ClientBlogsPage({ posts }: { posts: any[] }) {
                     <div className="flex justify-between items-center mb-10 border-b border-gray-200 pb-4">
                         <h2 className="text-3xl font-bold">Recent Posts</h2>
                         <Button asChild variant="ghost" className="gap-1">
-                            <Link href="/blog" className="flex items-center">
+                            <Link href="/blog/page/1" className="flex items-center">
                                 View all <ArrowRight size={16} />
                             </Link>
                         </Button>
