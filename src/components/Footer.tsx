@@ -43,21 +43,13 @@ const Footer = () => {
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-900 mb-4">Connect</h3>
             <ul className="space-y-3">
+
               <li>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Twitter
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <a href="https://www.linkedin.com/in/yong-kwon-cpa-pfs-abv-cva-cmaa-cepa-7a549724" className="text-gray-600 hover:text-blue-600 transition-colors">
                   LinkedIn
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  GitHub
-                </a>
-              </li>
+
             </ul>
           </div>
         </div>
