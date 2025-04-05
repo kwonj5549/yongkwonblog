@@ -5,6 +5,7 @@ import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 import Image from "next/image";
 import { WPPost } from "@/lib/wordpress";
+import he from "he";
 
 interface BlogContentProps {
     englishPost: WPPost | null;
@@ -21,7 +22,7 @@ const BlogContent: React.FC<BlogContentProps> = ({
                                                  }) => {
     const { language } = useLanguage();
 
-    // Choose which post/allPosts to use based on language.
+    // Choose which post/allPosts to use based on the current language.
     const post = language === "ko" ? koreanPost : englishPost;
     const allPosts = language === "ko" ? koreanAllPosts : englishAllPosts;
 
@@ -29,46 +30,64 @@ const BlogContent: React.FC<BlogContentProps> = ({
         return <div>Post not found</div>;
     }
 
+    // Extract categories from the English post using its embedded data.
+    let categories: string[] = [];
+    if (englishPost && englishPost._embedded?.["wp:term"]) {
+        const termGroups = englishPost._embedded["wp:term"];
+        if (Array.isArray(termGroups)) {
+            categories = termGroups
+                .flat()
+                .filter((term) => term.taxonomy === "category")
+                .map((term) => term.name);
+        }
+    }
+    // If no categories are found, fallback to an empty array.
+    // (You could also provide a default value if desired.)
+
     // Determine which fields to render.
-    const titleRendered = language === "ko" ? post.translatedTitle : post.title?.rendered;
-    const excerptRendered = language === "ko" ? post.translatedExcerpt : post.excerpt?.rendered;
-    const contentRendered = language === "ko" ? post.translatedContent : post.content?.rendered;
+    const titleRendered =
+        language === "ko" ? post.translatedTitle : post.title?.rendered;
+    const excerptRendered =
+        language === "ko" ? post.translatedExcerpt : post.excerpt?.rendered;
+    const contentRendered =
+        language === "ko" ? post.translatedContent : post.content?.rendered;
 
     const safeTitle = titleRendered ?? "";
     const safeExcerpt = excerptRendered ?? "";
     const safeContent = contentRendered ?? "";
 
-    // Format date.
+    // Format the post date.
     const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
         year: "numeric",
     });
 
-    // Compute reading time.
+    // Compute reading time (assuming 200 words per minute).
     const contentText = safeContent.replace(/<[^>]+>/g, "");
     const wordCount = contentText.trim().split(/\s+/).length;
     const readingTime = Math.ceil(wordCount / 200);
-
-    // Determine category name.
-    let categoryName = "Category";
-    if (language === "en" && post._embedded?.["wp:term"]) {
-        categoryName =
-            post._embedded["wp:term"].find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
-            "Category";
-    } else if (language === "ko") {
-        categoryName = "카테고리";
-    }
 
     // Find related posts.
     let relatedPosts: WPPost[] = [];
     if (language === "en") {
         relatedPosts = allPosts
             .filter((p: WPPost) => {
-                const pCategory =
-                    p._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name ||
-                    "Category";
-                return pCategory === categoryName && p.id !== post.id;
+                let pCategories: string[] = [];
+                if (p._embedded?.["wp:term"]) {
+                    const groups = p._embedded["wp:term"];
+                    if (Array.isArray(groups)) {
+                        pCategories = groups
+                            .flat()
+                            .filter((term) => term.taxonomy === "category")
+                            .map((term) => term.name);
+                    }
+                }
+                // Check if the post shares at least one category with the English post.
+                const hasCommonCategory = pCategories.some((cat) =>
+                    categories.includes(cat)
+                );
+                return hasCommonCategory && p.id !== post.id;
             })
             .slice(0, 3);
     } else {
@@ -131,19 +150,20 @@ const BlogContent: React.FC<BlogContentProps> = ({
                         dangerouslySetInnerHTML={{ __html: safeContent }}
                     />
                     {/* Categories */}
-                    <div className="my-10 pt-10 border-t">
-                        <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                {categoryName}
-              </span>
-                            <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                M&A
-              </span>
-                            <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-                Corporate Finance
-              </span>
+                    {categories.length > 0 && (
+                        <div className="my-10 pt-10 border-t">
+                            <div className="flex flex-wrap gap-2">
+                                {categories.map((cat, index) => (
+                                    <span
+                                        key={index}
+                                        className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                                    >
+                    {he.decode(cat)}
+                  </span>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
                 {/* Related posts */}
                 {relatedPosts.length > 0 && (
