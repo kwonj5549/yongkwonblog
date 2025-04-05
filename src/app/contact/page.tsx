@@ -168,19 +168,7 @@ const ContactPage = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-start">
-                  <div className="shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                    <Clock className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Working Hours</h3>
-                    <p className="mt-1 text-gray-600">
-                      Monday - Friday: 9AM - 5PM<br />
-                      Saturday: 10AM - 2PM<br />
-                      Sunday: Closed
-                    </p>
-                  </div>
-                </div>
+
               </div>
               
               <div className="mt-8">

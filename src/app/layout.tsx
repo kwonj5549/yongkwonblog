@@ -1,8 +1,11 @@
-// app/layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Layout from "@/components/Layout"; // Adjust the import path as needed
+import Layout from "@/components/Layout";
+import {Language, LanguageProvider} from "@/context/LanguageContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { cookies } from "next/headers";
+import { parseLanguageFromCookie } from "@/lib/language";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -19,19 +22,25 @@ export const metadata: Metadata = {
     description: "BizConMnA by Yong Kwon",
 };
 
-export default function RootLayout({
-                                       children,
-                                   }: {
+export default async function RootLayout({
+                                             children,
+                                         }: {
     children: React.ReactNode;
 }) {
-    // @ts-ignore
+    // Read the language cookie on the server.
+    const cookieStore = await cookies();
+    const cookieLang = cookieStore.get("lang")?.value;
+    const initialLanguage: Language = parseLanguageFromCookie(cookieLang);
+
     return (
         <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        {/* Wrap all pages with your custom Layout */}
-        <Layout>{children}</Layout>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <LanguageProvider initialLanguage={initialLanguage}>
+            <Layout>
+                {children}
+                <LanguageSwitcher />
+            </Layout>
+        </LanguageProvider>
         </body>
         </html>
     );
