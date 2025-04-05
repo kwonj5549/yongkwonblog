@@ -5,7 +5,6 @@ import BackButton from "@/components/BackButton";
 import Newsletter from "@/components/Newsletter";
 import Image from "next/image";
 import { WPPost } from "@/lib/wordpress";
-import he from "he";
 
 interface BlogContentProps {
     englishPost: WPPost | null;
@@ -22,7 +21,7 @@ const BlogContent: React.FC<BlogContentProps> = ({
                                                  }) => {
     const { language } = useLanguage();
 
-    // Choose which post/allPosts to use based on the current language.
+    // Choose the post and allPosts based on language.
     const post = language === "ko" ? koreanPost : englishPost;
     const allPosts = language === "ko" ? koreanAllPosts : englishAllPosts;
 
@@ -30,27 +29,21 @@ const BlogContent: React.FC<BlogContentProps> = ({
         return <div>Post not found</div>;
     }
 
-    // Extract categories from the English post using its embedded data.
-    let categories: string[] = [];
+    // Always use the English post for categories (if available)
+    let categoryName = "Category";
     if (englishPost && englishPost._embedded?.["wp:term"]) {
-        const termGroups = englishPost._embedded["wp:term"];
-        if (Array.isArray(termGroups)) {
-            categories = termGroups
-                .flat()
-                .filter((term) => term.taxonomy === "category")
-                .map((term) => term.name);
-        }
+        categoryName =
+            englishPost._embedded["wp:term"].find(
+                (group) => group[0]?.taxonomy === "category"
+            )?.[0]?.name || "Category";
+    } else if (language === "ko") {
+        categoryName = "카테고리";
     }
-    // If no categories are found, fallback to an empty array.
-    // (You could also provide a default value if desired.)
 
     // Determine which fields to render.
-    const titleRendered =
-        language === "ko" ? post.translatedTitle : post.title?.rendered;
-    const excerptRendered =
-        language === "ko" ? post.translatedExcerpt : post.excerpt?.rendered;
-    const contentRendered =
-        language === "ko" ? post.translatedContent : post.content?.rendered;
+    const titleRendered = language === "ko" ? post.translatedTitle : post.title?.rendered;
+    const excerptRendered = language === "ko" ? post.translatedExcerpt : post.excerpt?.rendered;
+    const contentRendered = language === "ko" ? post.translatedContent : post.content?.rendered;
 
     const safeTitle = titleRendered ?? "";
     const safeExcerpt = excerptRendered ?? "";
@@ -73,21 +66,9 @@ const BlogContent: React.FC<BlogContentProps> = ({
     if (language === "en") {
         relatedPosts = allPosts
             .filter((p: WPPost) => {
-                let pCategories: string[] = [];
-                if (p._embedded?.["wp:term"]) {
-                    const groups = p._embedded["wp:term"];
-                    if (Array.isArray(groups)) {
-                        pCategories = groups
-                            .flat()
-                            .filter((term) => term.taxonomy === "category")
-                            .map((term) => term.name);
-                    }
-                }
-                // Check if the post shares at least one category with the English post.
-                const hasCommonCategory = pCategories.some((cat) =>
-                    categories.includes(cat)
-                );
-                return hasCommonCategory && p.id !== post.id;
+                const pCategory =
+                    p._embedded?.["wp:term"]?.find((group) => group[0]?.taxonomy === "category")?.[0]?.name || "Category";
+                return pCategory === categoryName && p.id !== post.id;
             })
             .slice(0, 3);
     } else {
@@ -145,25 +126,18 @@ const BlogContent: React.FC<BlogContentProps> = ({
                     </div>
                     {/* Blog content */}
                     <div
-                        className="blog-content"
+                        className={`blog-content ${language === "ko" ? "korean-text" : ""}`}
                         suppressHydrationWarning
                         dangerouslySetInnerHTML={{ __html: safeContent }}
                     />
                     {/* Categories */}
-                    {categories.length > 0 && (
-                        <div className="my-10 pt-10 border-t">
-                            <div className="flex flex-wrap gap-2">
-                                {categories.map((cat, index) => (
-                                    <span
-                                        key={index}
-                                        className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
-                                    >
-                    {he.decode(cat)}
-                  </span>
-                                ))}
-                            </div>
+                    <div className="my-10 pt-10 border-t">
+                        <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+                {categoryName}
+              </span>
                         </div>
-                    )}
+                    </div>
                 </div>
                 {/* Related posts */}
                 {relatedPosts.length > 0 && (
