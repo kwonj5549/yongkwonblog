@@ -24,23 +24,14 @@ const Page = () => {
               />
 
               <div className="mt-8 flex flex-wrap justify-center gap-4">
+
                 <Button variant="outline" size="icon" asChild>
-                  <Link href="#" aria-label="Twitter">
-                    <Twitter size={18} />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="icon" asChild>
-                  <Link href="#" aria-label="Github">
-                    <Github size={18} />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="icon" asChild>
-                  <Link href="#" aria-label="LinkedIn">
+                  <Link href="https://www.linkedin.com/in/yong-kwon-cpa-pfs-abv-cva-cmaa-cepa-7a549724" aria-label="LinkedIn">
                     <Linkedin size={18} />
                   </Link>
                 </Button>
                 <Button variant="outline" size="icon" asChild>
-                  <a href="mailto:contact@example.com" aria-label="Email">
+                  <a href="mailto:kwonyongseok@hotmail.com" aria-label="Email">
                     <Mail size={18} />
                   </a>
                 </Button>
