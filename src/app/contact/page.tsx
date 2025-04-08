@@ -126,19 +126,7 @@ const ContactPage = () => {
             
             <div className="bg-gray-50 p-8 rounded-lg">
               <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                    <MapPin className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900">Location</h3>
-                    <p className="mt-1 text-gray-600">
-                      123 Main Street<br />
-                      San Francisco, CA 94107<br />
-                      United States
-                    </p>
-                  </div>
-                </div>
+
                 
                 <div className="flex items-start">
                   <div className="shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
@@ -148,7 +136,7 @@ const ContactPage = () => {
                     <h3 className="text-lg font-medium text-gray-900">Email</h3>
                     <p className="mt-1 text-gray-600">
                       <a href="mailto:contact@example.com" className="hover:text-blue-600">
-                        contact@example.com
+                        kwonyongseok@hotmail.com
                       </a>
                     </p>
                   </div>
@@ -161,8 +149,8 @@ const ContactPage = () => {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900">Phone</h3>
                     <p className="mt-1 text-gray-600">
-                      <a href="tel:+1234567890" className="hover:text-blue-600">
-                        +1 (234) 567-890
+                      <a href="tel:+12179791481" className="hover:text-blue-600">
+                        +1 (217) 979-1481
                       </a>
                     </p>
                   </div>

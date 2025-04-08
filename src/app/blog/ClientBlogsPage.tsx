@@ -184,7 +184,7 @@ export default function ClientBlogsPage({
                                             />
                                             <label
                                                 htmlFor={`tag-${tag}`}
-                                                className="text-sm font-medium leading-none cursor-pointer"
+                                                className="text-base font-bold leading-none cursor-pointer"
                                             >
                                                 {tag}
                                             </label>

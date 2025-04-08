@@ -10,7 +10,7 @@ const LanguageSwitcher = () => {
     };
 
     // Display the current language
-    const displayText = language === "en" ? "English" : "한국어";
+    const displayText = language === "en"   ? "한국어" :"English";
 
     return (
         <div
