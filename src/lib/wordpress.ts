@@ -44,7 +44,7 @@ const postSchema = new mongoose.Schema({
     translatedContent: String,
     date: Date,
     slug: String,
-});
+},{ collection: "translated_posts" });
 const Post = mongoose.models.Post || mongoose.model("Post", postSchema);
 
 /**
